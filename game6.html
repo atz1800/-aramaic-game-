@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>משחק לימוד ארמית - מילון 300 מילים</title>
+  <style>
+    body {
+      direction: rtl;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: linear-gradient(120deg, #cceeff, #e0ccff);
+      min-height: 100vh;
+    }
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      background: #ffffffdd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    .creator-note {
+      font-size: 12px;
+      color: #666;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #444;
+      background: linear-gradient(to right, #5da9dd, #7d5add);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h2, h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    p {
+      margin: 0 0 10px;
+    }
+    button {
+      background: #5d5add;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background: #4843c8;
+    }
+    .btn-outline {
+      background: #fff;
+      color: #5d5add;
+      border: 1px solid #5d5add;
+    }
+    .btn-outline:hover {
+      background: #eae7ff;
+      color: #433da4;
+    }
+    .input-text {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .question-box {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      background: #fafafe;
+    }
+    /* תשובות כקלפים */
+    .answers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; 
+      gap: 10px;
+    }
+    .answer-card {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      font-size: 14px;
+    }
+    .answer-card:hover {
+      background: #f3f3f3;
+    }
+    .correct {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+    .wrong {
+      border-color: #dc3545;
+      background: #f8d7da;
+    }
+    .items-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .item-card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fafafa;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .item-icon {
+      font-size: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+      background: #fff;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: center;
+      vertical-align: middle;
+    }
+    thead {
+      background: #eae7ff;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .overlay-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      width: 90%;
+      max-width: 700px;
+    }
+  </style>
+
+<meta name="NetsparkQuiltingResult" total-length="31803" removed="0" rules-found="w2655,w3390,w3012,w2577,w21217,w18220,w19473,w30244,w17521,w30270,w17496,w17494,w30581,w30661,w19665,w17802,w30329,w19801,w30580,w30596,w16717,w30145,w30984,w30660,w30794,w30219,w73,w4748,w4749,w30364" />
+</head>
+<body>
+
+<div class="container" id="gameRoot">
+  <!-- התוכן ניצור ב-JS -->
+</div>
+
+<script>
+/********************************************
+  1) הוספת משפט "נוצר ע"י עמיחי צדוק" למעלה
+********************************************/
+// ניצור אלמנט p ונוסיף אותו ידנית לפני כל התוכן
+const root = document.getElementById("gameRoot");
+const creatorNote = document.createElement("p");
+creatorNote.className = "creator-note";
+creatorNote.textContent = "נוצר על ידי עמיחי צדוק";
+root.appendChild(creatorNote);
+
+/**************************************
+  רשימת 300 מילים בארמית
+**************************************/
+const ARAMAIC_DICTIONARY = {
+  "אבא": "אב",
+  "אבד זכותיה": "איבד את זכויותיו",
+  "אבהתן": "אבותיהם",
+  "אבהתיה": "אבותיו",
+  "אדהכי": "בינתיים, בעוד ש…",
+  "אדיוקא": "בדיוק, בהדגשה",
+  "אדרבה": "אדרבא, להיפך",
+  "אי": "אם",
+  "אי נמי": "או גם, אפשרות נוספת",
+  "איכא": "יש, מצוי",
+  "אילו": "אלו, אלה",
+  "אימור": "אמור, נאמר",
+  "אינך": "האחרים, השאר",
+  "אין": "כן (להסכמה)",
+  "איסורא": "איסור",
+  "איתרבי": "נתרבה, נכלל (הורחב הדין)",
+  "איקלע": "נזדמן, הגיע",
+  "אימתי": "מתי",
+  "אימתי קטירא": "מתי נקשר הדבר?",
+  "איסתפקא לן": "נסתפק לנו, התעורר ספק",
+  "איכא דמתני": "יש מי שמוסר כך",
+  "באי": "באים (צורת רבים)",
+  "בהאי": "בזה, בדבר זה",
+  "בהדיה": "יחד עמו, יחד איתו",
+  "ביהדיה": "ביחד, באותו זמן",
+  "ברייתא": "משנה חיצונית (לא נכנסה למשנה)",
+  "בר": "בן / חוץ / תבואה (תלוי הקשר)",
+  "ברי": "ברור, ודאי",
+  "בתרא": "אחרון, האחרון",
+  "ביני וביני": "בינתיים, בין כך ובין כך",
+  "ברם": "אבל, אלא",
+  "בטלינן": "מבטלים, מתבטלים",
+  "בתר": "אחרי, לאחר",
+  "בתר ד...": "אחרי ש…",
+  "בעלמא": "סתם, כללית",
+  "בעי": "רוצה / שואל / צריך",
+  "בי דינא": "בית הדין",
+  "ביה בי": "בבית, בו",
+  "ביש": "רע, גרוע",
+  "בישולא": "בישול (פעולה)",
+  "בכדי": "בחינם, ללא סיבה / או בכמות מספקת",
+  "גברא": "איש",
+  "גרסינן": "גורסים, לומדים (נוסח)",
+  "גזירה": "גזרה (איסור דרבנן)",
+  "גמר": "למד, סיים",
+  "גמרא": "תורה שבעל פה / חלק התלמוד",
+  "גריעותא": "פחיתות, גריעות",
+  "גרידא": "בלבד, נטו",
+  "גדפא": "כנף, צד",
+  "גרמא": "גרימה בעקיפין",
+  "גלותא": "גלות",
+  "גופיה": "גופו, הוא עצמו",
+  "גינונא": "נימוס, הנהגה",
+  "גויזא": "גזע עץ, יסוד הדבר",
+  "גופא": "העניין עצמו, גוף הדברים",
+  "גריעותא דמילתא": "חסרון הדבר",
+  "גברא רבה": "אדם גדול (בתורה)",
+  "ג' כרכין": "שלושה מקומות חשובים",
+  "גרדא": "סתם, בלא תוספת",
+  "גוזמא": "הגזמה",
+  "גמרינן": "לומדים, מסיקים",
+  "דא": "זה, הדבר הזה",
+  "דאין": "שהם אינם",
+  "דליכא": "שאין",
+  "דמעיקרא": "מתחילה, מלכתחילה",
+  "דאמר": "שאומר",
+  "דאמרינן": "שאמרנו",
+  "דאיקלע": "שנזדמן",
+  "דאיתיה": "שהוא קיים",
+  "דאיקפד": "שכעס",
+  "דאקשי": "שהקשה (שאלה)",
+  "דררא": "סיבה, גורם",
+  "דשמעת": "ששמעת",
+  "דינא": "דין",
+  "דידהו": "שלהם",
+  "דידיה": "שלו",
+  "דידהן": "שלהן",
+  "דידכו": "שלכם",
+  "דהכא": "שכאן",
+  "דהתם": "ששם",
+  "דסלקא דעתך": "שעלתה על דעתך",
+  "האי": "זה, דבר זה",
+  "הכא": "כאן",
+  "התם": "שם",
+  "הכי": "כך",
+  "הא": "הרי, הנה",
+  "הוא אמינא": "הייתי אומר, מחשבה ראשונה",
+  "הוה עובדא": "היה מעשה",
+  "היכי דמי": "איך זה? באיזה מצב?",
+  "היינו": "כלומר, זהו פירוש הדבר",
+  "ואי": "ואם",
+  "והא": "והרי, והנה",
+  "והדר": "ואחר כך, וחזר",
+  "והכי נמי": "וכך גם",
+  "והשתא": "ועכשיו",
+  "והותירו": "הותירו, השאירו עוד",
+  "והוה": "והיה",
+  "ואמרי לה": "ויש אומרים באופן אחר",
+  "והלכתא": "והלכה היא",
+  "והא קא חזינן": "והרי אנחנו רואים",
+  "והכי קאמר": "וכך הוא אומר",
+  "זוטא": "קטן, מועט",
+  "זיל": "לך (ציווי)",
+  "זמנה": "זמן, תקופה",
+  "זוטרא": "קטן, לעיתים כשם חכם",
+  "זימנא": "פעם, זמן",
+  "זכי": "זכה, הרוויח",
+  "חומרא": "חומרה, החמרה בדין",
+  "חומרא יתירא": "חומרה יתרה",
+  "חסורי מחסרא": "חסר, השמטה בטקסט",
+  "חתניה": "חתנו, חתניו",
+  "חייב איניש": "חייב אדם (פתיח לדין)",
+  "חיישינן": "חוששים, לוקחים בחשבון",
+  "חס ליה": "חלילה לו",
+  "חוטרא": "מקל, שבט",
+  "חזי": "רואה / ראוי",
+  "חזקה": "הנחת יסוד / חזקה משפטית",
+  "חיטי": "חיטים",
+  "חסדא": "חסד (שם אמורא: רב חסדא)",
+  "חפץ": "רוצה, מעוניין",
+  "חיוורא": "לבן",
+  "טפי": "יותר",
+  "טעמא": "טעם, הסבר",
+  "טעמיה": "טעמו, הסברו",
+  "טב למיטב": "טוב לשלם",
+  "טב/טבין": "טוב, טובים",
+  "טליא": "ילד קטן, או 'תלוי'",
+  "טלפח": "כף יד",
+  "יאוש": "התייאשות (בהלכה)",
+  "ידיעה": "ידיעה, מידע",
+  "יהב": "נתן",
+  "יהבי": "נותנים",
+  "יממא": "יום",
+  "ימתין": "יחכה",
+  "יתיב": "יושב",
+  "יתירה": "תוספת",
+  "יתמי": "יתומים",
+  "יקרא": "כבוד, יקר",
+  "ימלך": "יתייעץ, יחשוב",
+  "יקרה": "כבוד",
+  "יתיב בדינא": "יושב בדין (דיין)",
+  "כי האי גוונא": "באופן כזה",
+  "כי היכי": "כדי ש, על מנת ש",
+  "כדאמרינן": "כמו שאמרנו",
+  "כדקאמר": "כמו שהוא אומר",
+  "כולהו": "כולם",
+  "כנגדיה": "כנגדו",
+  "כסיפא ליה מילתא": "הדבר מבייש אותו",
+  "כתב רב": "פסק כך וכך",
+  "לאפוקי": "להוציא (למעט)",
+  "לא מבעיא": "לא צריך לומר (קל וחומר)",
+  "לבתר": "לאחר מכן",
+  "ליהוי": "שיהיה",
+  "למעוטי": "למעט, להוציא",
+  "לישנא": "לשון (שפה)",
+  "לית": "אין, איננו",
+  "לית דחייש": "אין מי שחושש לזה",
+  "ליתי": "שיבוא",
+  "למעבד": "לעשות",
+  "למפרע": "לאחור, בדיעבד",
+  "לית ליה": "אין לו",
+  "מאי": "מה",
+  "מאי בינייהו": "מה ההבדל ביניהם",
+  "מאן": "מי",
+  "מאן דאמר": "מי שאומר (דעה)",
+  "מדאורייתא": "מן התורה",
+  "מדירבנן": "מדרבנן",
+  "מיהא": "על כל פנים",
+  "מחוורתא": "ברור יותר",
+  "מייתי": "מביא",
+  "מיתיבי": "מקשים מברייתא",
+  "מכאן ואילך": "להבא, מכאן ולהמשיך",
+  "מנא הני מילי": "מניין דברים אלו",
+  "מנלן": "מניין לנו",
+  "מסתברא": "מסתבר, הגיוני",
+  "מספקא לן": "יש לנו ספק",
+  "מציעתא": "האמצע",
+  "מידי דהוה א": "בדומה למה שהולך לגבי...",
+  "מילתא": "דבר, עניין",
+  "מיעוטא": "מיעוט",
+  "מעיקרא": "מתחילה, מלכתחילה",
+  "נימא": "נאמר, אולי נאמר",
+  "נפקא מינה": "הבדל מעשי שיוצא מכך",
+  "נפיק": "יוצא",
+  "נקט": "אחז, החזיק",
+  "ניזיל": "נלך",
+  "ניחא": "נוח, מסתדר",
+  "נסיב": "נשא (אישה) / לקח",
+  "נקיט": "תופס, אוחז",
+  "נסתחפה שדהו": "שדהו נפגעה (הפסיד)",
+  "סברא": "סברה, היגיון",
+  "סגי": "מספיק, די (ולפעמים 'גדול')",
+  "סלקא דעתך": "היית מעלה על דעתך?",
+  "סלקא דעתך אמינא": "היית חושב לומר...",
+  "סלקין": "עולים או מסיקים",
+  "סמוך": "קרוב, צמוד",
+  "סעודתא": "סעודה",
+  "סגולה": "טובה מיוחדת",
+  "ספרא": "ספר",
+  "ספקא": "ספק",
+  "ספיקא דרבנן": "ספק בדין דרבנן",
+  "עביד": "עושה, פועל",
+  "עבידתיה": "מעשיו",
+  "עייל": "נכנס",
+  "עיילי": "נכנסו",
+  "עייל נפשיה": "נכנס בעצמו",
+  "עביד השתא": "עושה עכשיו",
+  "עד ד…": "עד ש…",
+  "עילוי": "עלייה, רמה גבוהה",
+  "עבידתא": "מעשה, מלאכה",
+  "עקר": "נעקר, יצא ממקומו",
+  "ע\"כ": "על כרחך",
+  "פורתא": "מעט, קצת",
+  "פשיטא": "פשוט",
+  "פירכא": "קושיה חזקה",
+  "פטר": "שחרר, או 'פטר רחם' וכו'",
+  "פסקא": "פסיקה, סיום עניין",
+  "פירי": "פירות",
+  "פיקדון": "חפץ שהופקד",
+  "פומא": "פה, פיו",
+  "פעי ליה": "צעק לו, פנה בקול",
+  "צווח": "צעק, קרא בקול",
+  "צריך": "זקוק",
+  "צריכא": "צריך הדבר, נדרש",
+  "צדקתא": "צדקה",
+  "צורבא מרבנן": "תלמיד חכם צעיר",
+  "צערא": "צער, כאב",
+  "צריך עיון": "דורש עיון נוסף",
+  "קאי": "עומד, מתקיים",
+  "קא מישתמע": "משתמע, מובן",
+  "קאמר": "הוא אומר",
+  "קם ליה בדרבה מיניה": "נענש בעונש החמור מבין השניים",
+  "קל וחומר": "קל וחומר",
+  "קמיה": "לפניו",
+  "קושטא": "אמת (בקושטא)",
+  "קושטא דמילתא": "האמת של הדבר",
+  "קרא": "פסוק, כתוב",
+  "קודם זמניה": "לפני הזמן שלו",
+  "קשרו": "קשרו, התנו",
+  "קלילא": "קל, לא כבד",
+  "רישא": "ההתחלה, החלק הראשון",
+  "רעיא": "רועה",
+  "רשאי": "מותר לו",
+  "רשות": "רשות, תחום בעלות",
+  "רמו": "הטילו עליו (חובה)",
+  "רמינן": "מטילים (קושיה) או משליכים",
+  "רבנן": "חכמים",
+  "רברבי": "גדולים",
+  "רחמנא": "הרחמן, כינוי לקב\"ה",
+  "רחים": "אוהב",
+  "ריחא": "ריח",
+  "רמיא": "מוטלת (חובה), או השליך",
+  "שאני": "שונה הוא",
+  "שארי": "התיר, מותר",
+  "שעתא": "שעה, זמן",
+  "שאיל": "שאל, לווה",
+  "שביק": "עוזב, מניח",
+  "שדא": "זרק, השליך",
+  "שדי": "הניח (או 'שדה')",
+  "שמע מינה": "למד ממנה",
+  "תיקו": "תישאר בקושיה",
+  "תנא": "שנה, לימד (חכם משנה)",
+  "תנינא": "שנינו (במשנה/ברייתא)",
+  "תנאי": "מחלוקת תנאים / התניה",
+  "תיקון": "תיקון, קביעה",
+  "תירוץ": "תשובה לקושיה",
+  "תרתי": "שתיים",
+  "תרתי דסתרי": "שני עניינים סותרים",
+  "תשלומין": "השלמה, פיצוי",
+  "תנחומין": "נחמה",
+  "אי אמרת בשלמא…": "אם תאמר שמסתדר ש…",
+  "אליבא ד…": "לפי שיטתו של…",
+  "אלא מעתה": "אם כן, ...",
+  "בדיעבד": "לאחר מעשה",
+  "בר מיניה": "חוץ ממנו",
+  "דרוש וקבל שכר": "עיסוק בדבר שאינו להלכה",
+  "ואי בעית אימא": "ואם תרצה אמור (הסבר נוסף)",
+  "האי מיבעי ליה": "את זה הוא צריך",
+  "השתא דאתית להכי": "עתה שבאת לזה",
+  "חזי לאצטרופי": "ראוי לצרף (הלכתית)",
+  "טעמא ד…": "הסיבה היא ש…",
+  "לא צריכא אלא…": "לא נצרך אלא למקרה זה",
+  "לן הלכתא": "לנו ההלכה היא…",
+  "מאי נפקא מינה": "מה יוצא מזה למעשה?",
+  "מאי טעמא": "מה הסיבה?",
+  "מיבעי ליה": "היה צריך לו",
+  "מילתא דפשיטא": "דבר פשוט הוא",
+  "סתם ואחר כך מחלוקת": "כלל פרשני במשנה",
+  "פלוני לטעמיה": "פלוני לשיטתו",
+  "קל וחומר בן בנו של קל וחומר": "חיזוק לטיעון ק\"ו",
+  "קים ליה בדרבה מיניה": "מקבל העונש החמור",
+  "ריש לקיש": "שם אמורא (ר' שמעון בן לקיש)",
+  "שב ואל תעשה": "הימנעות מפעולה עדיפה",
+  "תיקו (חוזר)": "תישאר בקושיה",
+  "תנא קמא": "התנא הראשון בדעה",
+  "תנו רבנן": "לימדו חכמים (ברייתא)",
+  "תרי גווני": "שני סוגים",
+  "תרי ותלת": "שניים ושלושה",
+  "תריץ הכי": "הסבר כך",
+  "תרי קלי מילי": "שני עניינים קלים"
+};
+
+/**************************************
+  נתוני הנשקים + הוספנו 2 מגה-אגדי
+**************************************/
+const RARITY = {
+  COMMON:        { name: "פשוט",        color: "#666",   bg: "#f0f0f0" },
+  SPECIAL:       { name: "מיוחד",       color: "#007bff", bg: "#dbeafe" },
+  RARE:          { name: "נדיר",        color: "#6f42c1", bg: "#eee5f8" },
+  LEGENDARY:     { name: "אגדי",        color: "#d39e00", bg: "#fffae6" },
+  MEGA_LEGENDARY:{ name: "מגה אגדי",   color: "#dc3545", bg: "#fde2e2" },
+};
+
+const ITEMS = {
+  WEAPONS: [
+    { id: "w1",  name: "חרב פלדה",     type: "weapon", rarity: RARITY.COMMON,  icon: "⚔️", power: 10 },
+    { id: "w2",  name: "קשת עץ",       type: "weapon", rarity: RARITY.COMMON,  icon: "🏹", power: 8 },
+    { id: "w3",  name: "חנית ברזל",    type: "weapon", rarity: RARITY.COMMON,  icon: "🔱", power: 12 },
+    { id: "w4",  name: "חרב האש",      type: "weapon", rarity: RARITY.SPECIAL, icon: "🔥", power: 20 },
+    { id: "w5",  name: "קשת הרעם",     type: "weapon", rarity: RARITY.SPECIAL, icon: "⚡", power: 18 },
+    { id: "w6",  name: "חנית הדרקון",  type: "weapon", rarity: RARITY.RARE,    icon: "🐉", power: 32 },
+    { id: "w7",  name: "חרב המלכים",   type: "weapon", rarity: RARITY.RARE,    icon: "👑", power: 30 },
+    { id: "w8",  name: "חרב הלהבה",    type: "weapon", rarity: RARITY.LEGENDARY, icon: "🌟", power: 50 },
+    { id: "w9",  name: "חרב הבריאה",   type: "weapon", rarity: RARITY.MEGA_LEGENDARY, icon: "💥", power: 70 },
+    // שני נשקים מגה-אגדיים חדשים:
+    { id: "w10", name: "שרביט האפלה",  type: "weapon", rarity: RARITY.MEGA_LEGENDARY, icon: "🔮", power: 75 },
+    { id: "w11", name: "פטיש הקוסמוס",  type: "weapon", rarity: RARITY.MEGA_LEGENDARY, icon: "🔨", power: 80 },
+  ]
+};
+
+const MOCK_DB = {
+  players: [],
+  savePlayer(playerData) {
+    this.players.push(playerData);
+    // מיון יורד לפי score
+    this.players.sort((a, b) => b.score - a.score);
+  }
+};
+
+function calculateItemScore(items) {
+  let score = 0;
+  items.forEach(item => {
+    if (item.rarity === RARITY.MEGA_LEGENDARY) score += 2000;
+    else if (item.rarity === RARITY.LEGENDARY) score += 1000;
+    else if (item.rarity === RARITY.RARE) score += 500;
+    else if (item.rarity === RARITY.SPECIAL) score += 200;
+    else score += 50;
+  });
+  return score;
+}
+
+/** הגרלה משוקללת: פשוט 50%, מיוחד 20%, נדיר 15%, אגדי 10%, מגה 5% */
+function getRandomWeaponByRarity() {
+  const roll = Math.random() * 100;
+  let chosenRarity;
+  if (roll < 50) chosenRarity = RARITY.COMMON;
+  else if (roll < 70) chosenRarity = RARITY.SPECIAL;
+  else if (roll < 85) chosenRarity = RARITY.RARE;
+  else if (roll < 95) chosenRarity = RARITY.LEGENDARY;
+  else chosenRarity = RARITY.MEGA_LEGENDARY;
+
+  const possible = ITEMS.WEAPONS.filter(w => w.rarity === chosenRarity);
+  if (possible.length === 0) return ITEMS.WEAPONS[0];
+  return possible[Math.floor(Math.random() * possible.length)];
+}
+
+/** יוצר שאלה רנדומלית מתוך 300 המילים */
+function generateAramaicQuestion() {
+  const entries = Object.entries(ARAMAIC_DICTIONARY);
+  const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+  const correctWord = randomEntry[0];
+  const correctMeaning = randomEntry[1];
+
+  const wrongPool = entries.filter(e => e[0] !== correctWord).map(e => e[1]);
+  const selectedWrong = [];
+  for (let i = 0; i < 3; i++) {
+    if (wrongPool.length === 0) break;
+    const idx = Math.floor(Math.random() * wrongPool.length);
+    selectedWrong.push(wrongPool[idx]);
+    wrongPool.splice(idx, 1);
+  }
+  const allOptions = [correctMeaning, ...selectedWrong];
+  for (let i = allOptions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
+  }
+  const correctIndex = allOptions.indexOf(correctMeaning);
+
+  return {
+    word: correctWord,
+    options: allOptions,
+    correctIndex
+  };
+}
+
+/**************************************
+   ניהול מצב המשחק (Vanilla JS)
+**************************************/
+let playerName = "";
+let gameStarted = false;
+let showLeaderboard = false;
+let score = 0;
+let currentItems = [];
+let correctStreak = 0;
+let questionCount = 0;
+let gameEnded = false;
+let currentQuestion = null;
+let selectedAnswer = null;
+let lockAnswers = false;
+
+function render() {
+  // מוסיפים h1 וכד'
+  const container = document.createElement("div");
+  container.innerHTML = `
+    <h1>משחק לימוד ארמית - 300 מילים</h1>
+  `;
+  root.appendChild(container);
+
+  if (!gameStarted) {
+    container.appendChild(renderStartScreen());
+    if (showLeaderboard) {
+      container.appendChild(renderLeaderboardOverlay());
+    }
+  } else {
+    if (gameEnded) {
+      container.appendChild(renderEndScreen());
+    } else {
+      container.appendChild(renderGameScreen());
+    }
+    if (showLeaderboard) {
+      container.appendChild(renderLeaderboardOverlay());
+    }
+  }
+}
+
+/** מסך פתיחה */
+function renderStartScreen() {
+  const div = document.createElement("div");
+
+  const h2 = document.createElement("h2");
+  h2.textContent = "התחלת משחק חדש";
+  div.appendChild(h2);
+
+  const label = document.createElement("label");
+  label.textContent = "שם שחקן:";
+  div.appendChild(label);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "input-text";
+  input.placeholder = "הכנס את שמך";
+  input.value = playerName;
+  input.oninput = (e) => { playerName = e.target.value; };
+  div.appendChild(input);
+
+  const btnStart = document.createElement("button");
+  btnStart.textContent = "התחל משחק";
+  btnStart.onclick = () => {
+    if (playerName.trim()) {
+      startGame();
+    } else {
+      alert("אנא הזן שם שחקן");
+    }
+  };
+  div.appendChild(btnStart);
+
+  const btnLB = document.createElement("button");
+  btnLB.textContent = "טבלת מובילים 🏆";
+  btnLB.className = "btn-outline";
+  btnLB.onclick = () => {
+    showLeaderboard = true;
+    cleanupAndRender();
+  };
+  div.appendChild(btnLB);
+
+  return div;
+}
+
+function startGame() {
+  gameStarted = true;
+  gameEnded = false;
+  score = 0;
+  currentItems = [];
+  correctStreak = 0;
+  questionCount = 0;
+  lockAnswers = false;
+  selectedAnswer = null;
+  currentQuestion = generateAramaicQuestion();
+  cleanupAndRender();
+}
+
+function renderGameScreen() {
+  const div = document.createElement("div");
+
+  const p1 = document.createElement("p");
+  p1.textContent = `ברוך הבא, ${playerName}!`;
+  div.appendChild(p1);
+
+  const p2 = document.createElement("p");
+  p2.textContent = `שאלה מספר: ${questionCount + 1} מתוך 50`;
+  div.appendChild(p2);
+
+  const p3 = document.createElement("p");
+  p3.textContent = `רצף תשובות נכונות נוכחי: ${correctStreak} / 5`;
+  div.appendChild(p3);
+
+  if (currentQuestion) {
+    div.appendChild(renderQuestionCard(currentQuestion));
+  }
+
+  if (currentItems.length > 0) {
+    const h3 = document.createElement("h3");
+    h3.textContent = "הפריטים שהרווחת עד כה:";
+    div.appendChild(h3);
+
+    const itemsGrid = document.createElement("div");
+    itemsGrid.className = "items-grid";
+    currentItems.forEach(item => {
+      itemsGrid.appendChild(renderItemCard(item));
+    });
+    div.appendChild(itemsGrid);
+  }
+
+  const pScore = document.createElement("p");
+  pScore.textContent = `ניקוד נוכחי: ${score}`;
+  div.appendChild(pScore);
+
+  // כפתורי סיום
+  const btnWrap = document.createElement("div");
+
+  const btnSave = document.createElement("button");
+  btnSave.textContent = "שמור תוצאה וסיים משחק";
+  btnSave.onclick = () => {
+    saveGameResults();
+    gameStarted = false;
+    cleanupAndRender();
+  };
+  btnWrap.appendChild(btnSave);
+
+  const btnReturn = document.createElement("button");
+  btnReturn.textContent = "חזרה לתפריט בלי שמירה";
+  btnReturn.className = "btn-outline";
+  btnReturn.onclick = () => {
+    gameStarted = false;
+    cleanupAndRender();
+  };
+  btnWrap.appendChild(btnReturn);
+
+  div.appendChild(btnWrap);
+
+  return div;
+}
+
+function renderQuestionCard(q) {
+  const box = document.createElement("div");
+  box.className = "question-box";
+
+  const h3 = document.createElement("h3");
+  h3.textContent = `מה פירוש המילה: ${q.word}?`;
+  box.appendChild(h3);
+
+  const grid = document.createElement("div");
+  grid.className = "answers-grid";
+
+  q.options.forEach((opt, idx) => {
+    const card = document.createElement("div");
+    card.className = "answer-card";
+    card.textContent = opt;
+
+    if (selectedAnswer !== null) {
+      if (idx === q.correctIndex) {
+        card.classList.add("correct");
+      } else if (idx === selectedAnswer) {
+        card.classList.add("wrong");
+      }
+    }
+
+    card.onclick = () => handleAnswer(idx);
+    grid.appendChild(card);
+  });
+
+  box.appendChild(grid);
+  return box;
+}
+
+function handleAnswer(idx) {
+  if (!currentQuestion || lockAnswers || gameEnded) return;
+  lockAnswers = true;
+  selectedAnswer = idx;
+  questionCount++;
+
+  if (idx === currentQuestion.correctIndex) {
+    correctStreak++;
+    if (correctStreak === 5) {
+      const weapon = getRandomWeaponByRarity();
+      currentItems.push(weapon);
+      score += weapon.power;
+      correctStreak = 0;
+      setTimeout(() => {
+        alert("כל הכבוד! זכית בפריט: " + weapon.name);
+      }, 300);
+    }
+  } else {
+    correctStreak = 0;
+  }
+
+  cleanupAndRender();
+
+  if (questionCount >= 50) {
+    endGame();
+    return;
+  }
+
+  setTimeout(() => {
+    currentQuestion = generateAramaicQuestion();
+    selectedAnswer = null;
+    lockAnswers = false;
+    cleanupAndRender();
+  }, 2000);
+}
+
+function renderItemCard(item) {
+  const divCard = document.createElement("div");
+  divCard.className = "item-card";
+  divCard.style.background = item.rarity.bg;
+
+  const iconSpan = document.createElement("span");
+  iconSpan.className = "item-icon";
+  iconSpan.textContent = item.icon;
+  divCard.appendChild(iconSpan);
+
+  const textDiv = document.createElement("div");
+  const nameDiv = document.createElement("div");
+  nameDiv.style.color = item.rarity.color;
+  nameDiv.style.fontWeight = "bold";
+  nameDiv.textContent = item.name;
+  textDiv.appendChild(nameDiv);
+
+  const rarityDiv = document.createElement("div");
+  rarityDiv.style.fontSize = "12px";
+  rarityDiv.style.color = "#555";
+  rarityDiv.textContent = item.rarity.name;
+  textDiv.appendChild(rarityDiv);
+
+  divCard.appendChild(textDiv);
+  return divCard;
+}
+
+function endGame() {
+  gameEnded = true;
+  cleanupAndRender();
+}
+
+function renderEndScreen() {
+  const box = document.createElement("div");
+  box.className = "question-box";
+
+  const h2 = document.createElement("h2");
+  h2.textContent = "ענית על 50 שאלות! המשחק נגמר.";
+  box.appendChild(h2);
+
+  const pScore = document.createElement("p");
+  pScore.textContent = `הניקוד שלך: ${score}`;
+  box.appendChild(pScore);
+
+  const btnWrap = document.createElement("div");
+
+  const btnSave = document.createElement("button");
+  btnSave.textContent = "שמור תוצאה וסיים";
+  btnSave.onclick = () => {
+    saveGameResults();
+    gameStarted = false;
+    cleanupAndRender();
+  };
+  btnWrap.appendChild(btnSave);
+
+  const btnRestart = document.createElement("button");
+  btnRestart.textContent = "שמור תוצאה והתחל מחדש";
+  btnRestart.className = "btn-outline";
+  btnRestart.onclick = () => {
+    saveGameResults();
+    startGame();
+  };
+  btnWrap.appendChild(btnRestart);
+
+  box.appendChild(btnWrap);
+  return box;
+}
+
+function saveGameResults() {
+  const playerData = {
+    name: playerName,
+    score: score,
+    items: [...currentItems],
+    date: new Date().toISOString()
+  };
+  MOCK_DB.savePlayer(playerData);
+}
+
+function renderLeaderboardOverlay() {
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+
+  const content = document.createElement("div");
+  content.className = "overlay-content";
+
+  const h3 = document.createElement("h3");
+  h3.textContent = "טבלת מובילים";
+  content.appendChild(h3);
+
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  thead.innerHTML = `
+    <tr>
+      <th>דירוג</th>
+      <th>שם</th>
+      <th>ניקוד</th>
+      <th>אגדיים+</th>
+      <th>סה"כ ניקוד פריטים</th>
+    </tr>
+  `;
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  MOCK_DB.players.forEach((player, index) => {
+    const legendaryList = player.items
+      .filter(item => item.rarity === RARITY.LEGENDARY || item.rarity === RARITY.MEGA_LEGENDARY)
+      .map(item => item.name)
+      .join(", ");
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${player.name}</td>
+      <td>${player.score}</td>
+      <td>${legendaryList}</td>
+      <td>${calculateItemScore(player.items)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+
+  content.appendChild(table);
+
+  const btnClose = document.createElement("button");
+  btnClose.textContent = "סגור";
+  btnClose.style.marginTop = "20px";
+  btnClose.style.width = "100%";
+  btnClose.onclick = () => {
+    showLeaderboard = false;
+    cleanupAndRender();
+  };
+  content.appendChild(btnClose);
+
+  overlay.appendChild(content);
+  return overlay;
+}
+
+function cleanupAndRender() {
+  root.innerHTML = "";
+  render();
+}
+
+// הפעלה ראשונית
+cleanupAndRender();
+</script>
+
+</body>
+</html>
